@@ -1,40 +1,32 @@
+################################################################################
 #   Procedural Content Generation Game, name TBD
+#
 #   Author: Colin O'Neill   faokryn@gmail.com
 #   github.com/Faokryn/1stPGC
+#
+#   level.py
+#   Defines the Level class.
+################################################################################
 
+from cell import *
 import random
 
-class Cell:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.obj = "W"
-
-    def __str__(self):
-        if self.obj == "W":
-            return("W")
-        else:
-            return(" ")
-
 class Level:
-    def __init__(self, width, height):
-        self.width  = width
-        self.height = height
-        self.level = {}
+#   The level class represents a single level of the game.  It consists of a
+#   grid of cells.
 
-        i = 0
-        while i < width+2:
-            j = 0
-            while j < height+2:
-                self.level[(i,j)] = Cell(i,j)
-                j = j+1
-            i = i+1
+    def __init__(self, width, height):
+        self.width, self.height = width, height
+        self.level = {  (i, j):Wall(i, j)
+                        for i in range(width+2)
+                        for j in range(height+2)
+                    }
 
     def __str__(self):
-        result = "\n\n"
+        result = "\n"
         j = 0
         while j < self.height+2:
-            line = ""
+            line = "\t"
             i = 0
             while i < self.width+2:
                 line += str( self.level[ (i,j) ] )
@@ -42,10 +34,3 @@ class Level:
             result += line + "\n"
             j = j+1
         return result
-
-def main():
-    width = int(input("Width?"))
-    height = int(input("Height?"))
-    level = Level(width, height)
-    print(str(level))
-main()
