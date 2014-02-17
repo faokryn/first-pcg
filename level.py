@@ -17,20 +17,28 @@ class Level:
 
     def __init__(self, width, height):
         self.width, self.height = width, height
+        #   Generate the north and south walls
         self.level = {  (i, j):Wall(i, j)
                         for i in range(width+2)
-                        for j in range(height+2)
-                    }
+                        for j in [0, height+1]
+                     }
+        # Generate the east and west walls
+        self.level.update({ (i,j):Wall(i, j)
+                            for i in [0, width+1]
+                            for j in range(height+2)
+                         })
+        # Fill the center wil empty cells
+        self.level.update({ (i,j):Cell(i, j)
+                            for i in range(1, width+1)
+                            for j in range(1, height+1)
+                         })
+
 
     def __str__(self):
-        result = "\n"
-        j = 0
-        while j < self.height+2:
-            line = "\t"
-            i = 0
-            while i < self.width+2:
-                line += str( self.level[ (i,j) ] )
-                i = i+1
-            result += line + "\n"
-            j = j+1
-        return result
+        return "\n" + "\n".join(
+            [  "".join( ["\t"]  +   [   str(self.level[(i,j)])
+                                        for i in range(self.width+2)
+                                    ])
+                                        for j in range(self.height+2)
+            ]) + "\n"
+
