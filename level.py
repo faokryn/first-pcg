@@ -33,6 +33,38 @@ class Level:
                             for j in range(self.height+2)
                          })
 
+        # Place Start and Finish cells
+        sides = ['N', 'S', 'W', 'E']
+        random.shuffle(sides)
+        sides = random.sample(sides, 2)
+
+        if sides[0] == 'N':
+            x = random.randrange(1, self.width+1)
+            self.level.update({(x, 0):Start(x, 0)})
+        elif sides[0] == 'S':
+            x = random.randrange(1, self.width+1)
+            self.level.update({(x, self.height+1):Start(x, self.height+1)})
+        elif sides[0] == 'W':
+            y = random.randrange(1, self.height+1)
+            self.level.update({(0, y):Start(0, y)})
+        elif sides[0] == 'E':
+            y = random.randrange(1, self.height+1)
+            self.level.update({(self.width+1, y):Start(self.width+1,y)})
+
+        if sides[1] == 'N':
+            x = random.randrange(1, self.width+1)
+            self.level.update({(x, 0):Finish(x, 0)})
+        elif sides[1] == 'S':
+            x = random.randrange(1, self.width+1)
+            self.level.update({(x, self.height+1):Finish(x, self.height+1)})
+        elif sides[1] == 'W':
+            y = random.randrange(1, self.height+1)
+            self.level.update({(0, y):Finish(0, y)})
+        elif sides[1] == 'E':
+            y = random.randrange(1, self.height+1)
+            self.level.update({(self.width+1, y):Finish(self.width+1,y)})
+
+
     def fillWhitespace(self):
         self.level.update({ (i,j):Cell(i,j)
                             for i in range(1, self.width+1)
