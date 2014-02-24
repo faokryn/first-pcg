@@ -16,21 +16,28 @@ class Level:
 #   grid of cells.
 
     def __init__(self, width, height):
-        self.width, self.height = width, height
-        #   Generate the north and south walls
-        self.level = {  (i, j):Wall(i, j)
-                        for i in range(width+2)
-                        for j in [0, height+1]
+        self.width, self.height, self.level = width, height, {}
+        # Fill the center with empty cells
+        self.buildBorder()
+        self.fillWhitespace()
+
+    def buildBorder(self):
+        # Generate the north and south walls
+        self.level = {  (i, j):Wall(i,j)
+                        for i in range(self.width+2)
+                        for j in [0, self.height+1]
                      }
         # Generate the east and west walls
-        self.level.update({ (i,j):Wall(i, j)
-                            for i in [0, width+1]
-                            for j in range(height+2)
+        self.level.update({ (i,j):Wall(i,j)
+                            for i in [0, self.width+1]
+                            for j in range(self.height+2)
                          })
-        # Fill the center wil empty cells
-        self.level.update({ (i,j):Cell(i, j)
-                            for i in range(1, width+1)
-                            for j in range(1, height+1)
+
+    def fillWhitespace(self):
+        self.level.update({ (i,j):Cell(i,j)
+                            for i in range(1, self.width+1)
+                            for j in range(1, self.height+1)
+                            if (i,j) not in self.level
                          })
 
 
