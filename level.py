@@ -19,6 +19,7 @@ class Level:
         self.width, self.height, self.level = width, height, {}
         # Fill the center with empty cells
         self.buildBorder()
+        self.placeRooms()
         self.fillWhitespace()
 
     def buildBorder(self):
@@ -71,6 +72,47 @@ class Level:
                             for j in range(1, self.height+1)
                             if (i,j) not in self.level
                          })
+
+    def placeRooms(self):
+        # determine max height and width
+        max_height = self.height//3
+        max_width  = self.width//3
+
+        # determine number of rooms
+        n = random.randrange(2,14)
+
+        # create a list of n tuples
+        rooms = [ (random.randrange(3,max_width+1),
+                   random.randrange(3,max_height+1))
+                  for k in range(n)
+                ]
+
+        # place rooms
+        while rooms != []:
+            # get a random room from the list
+            random.shuffle(rooms)
+            room = rooms.pop()
+
+            # determine corner
+            x_corner = random.randrange(1, self.width - room[0])
+            y_corner = random.randrange(1, self.height - room[1])
+
+            # check that the room can fit there
+            placeable = True
+            for i in range(x_corner, x_corner+room[0]):
+                for j in range(y_corner, y_corner+room[1]):
+                    if (i,j) in self.level:
+                        placeable = False
+
+            if placeable == True:
+                # place the room
+                self.level.update({ (i,j):Wall(i,j)
+                            for i in range(x_corner, x_corner+room[0])
+                            for j in range(y_corner, y_corner+room[1])
+                         })
+            else:
+                # put the room back in the list
+                rooms.append(room)
 
 
     def __str__(self):
