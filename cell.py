@@ -26,10 +26,6 @@ class Cell:
     def __str__(self):
         return u"\u2591"
 
-#############
-#   WALLS   #
-#############
-
 class Wall(Cell):
 #   The wall class is a subclass of the Cell class.  It represents a wall on the
 #   level.  By itself, it represents a wall that cannot be destroyed by the
@@ -61,5 +57,12 @@ class Finish(Cell):
     def __str__(self):
         return "F"
 
+##################
+#   OPEN SPACE   #
+##################
 
+class Room(Cell):
+    def __str__(self):
+        return "R"
+        
         

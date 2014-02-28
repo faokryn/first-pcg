@@ -59,54 +59,62 @@ class Level:
             self.level.update({(self.width-1, y):Finish(self.width,y)})
 
     def placeRooms(self):
-        # determine max height and width
-        max_height = self.height//3
-        max_width  = self.width//3
+        # Set the mean and standard deviation of room size distribution
+        mu_size = 8
+        sd_size = 2
 
+        # Determine mean and standard deviation of room number distribution
+        mu_rooms = (self.height * self.width)//mu_size**2
+        sd_rooms = 1
+
+        # generate rooms
+        rooms = [   (int(random.gauss(mu_size, sd_size)),
+                    int(random.gauss(mu_size, sd_size)))
+                    for i in range(int(random.gauss(mu_rooms, sd_rooms)))
+                ]
+
+
+        # place rooms
         failCount = 0
-        while failCount < 10:
-            
+        while rooms != []:
+            # get a random room from the list
+            random.shuffle(rooms)
+            room = rooms.pop()
 
-    # def placeRooms(self):
-    #     # determine max height and width
-    #     max_height = self.height//3
-    #     max_width  = self.width//3
+            # determine corner
+            x_corner = random.randrange(1, self.width - room[0])
+            y_corner = random.randrange(1, self.height - room[1])
 
-    #     # determine number of rooms
-    #     n = random.randrange(2,14)
+            # # check that the room can fit there
+            placeable = True
+            for i in range(x_corner, x_corner+room[0]):
+                for j in range(y_corner, y_corner+room[1]):
+                    if  isinstance(self.level[(i,j)], Wall) or \
+                        isinstance(self.level[(i,j)], Room):
+                        placeable = False
 
-    #     # create a list of n tuples
-    #     rooms = [ (random.randrange(3,max_width+1),
-    #                random.randrange(3,max_height+1))
-    #               for k in range(n)
-    #             ]
+            if placeable == True:
+                # place the room
+                self.level.update({ (i,j):Room(i,j)
+                            for i in range(x_corner, x_corner+room[0])
+                            for j in range(y_corner, y_corner+room[1])
+                         })
+                # reset failCount
+                print("Failures during this placement: ", failCount)
+                print("Rooms still to be printed:\n", rooms)
+                print("\n")
+                failCount = 0
+            else:
+                # put the room back in the list
+                rooms.append(room)
+                # increment failCounter
+                failCount += 1
 
-    #     # place rooms
-    #     while rooms != []:
-    #         # get a random room from the list
-    #         random.shuffle(rooms)
-    #         room = rooms.pop()
-
-    #         # determine corner
-    #         x_corner = random.randrange(1, self.width - room[0])
-    #         y_corner = random.randrange(1, self.height - room[1])
-
-    #         # check that the room can fit there
-    #         placeable = True
-    #         for i in range(x_corner, x_corner+room[0]):
-    #             for j in range(y_corner, y_corner+room[1]):
-    #                 if (i,j) in self.level:
-    #                     placeable = False
-
-    #         if placeable == True:
-    #             # place the room
-    #             self.level.update({ (i,j):Wall(i,j)
-    #                         for i in range(x_corner, x_corner+room[0])
-    #                         for j in range(y_corner, y_corner+room[1])
-    #                      })
-    #         else:
-    #             # put the room back in the list
-    #             rooms.append(room)
+            if failCount > 10:
+                print("ERROR: Failed to place room 10 times!")
+                print("Room failed on: ", room)
+                print("Rooms still to be printed:\n", rooms)
+                rooms = []
 
 
     def __str__(self):
