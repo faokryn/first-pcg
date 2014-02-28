@@ -24,7 +24,7 @@ class Cell:
         self.y = y
 
     def __str__(self):
-        return " "
+        return u"\u2591"
 
 #############
 #   WALLS   #
