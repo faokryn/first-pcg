@@ -2,7 +2,7 @@
 
 _A project to learn to use the Pygame library and to learn about procedural
 content generation in games by creating a simple 2D dungeon crawler with
-proceduarally generated levels_
+procedurally generated levels_
 
 
 #### Learning Goals
