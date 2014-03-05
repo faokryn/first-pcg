@@ -68,18 +68,18 @@ class Level:
         sd_rooms = 1
 
         # generate rooms
-        rooms = [   (int(random.gauss(mu_size, sd_size)),
-                    int(random.gauss(mu_size, sd_size)))
-                    for i in range(int(random.gauss(mu_rooms, sd_rooms)))
-                ]
+        # rooms = [   (int(random.gauss(mu_size, sd_size)),
+        #             int(random.gauss(mu_size, sd_size)))
+        #             for i in range(int(random.gauss(mu_rooms, sd_rooms)))
+        #         ]
 
 
         # place rooms
         failCount = 0
-        while rooms != []:
-            # get a random room from the list
-            random.shuffle(rooms)
-            room = rooms.pop()
+        while failCount < 50:
+            # generate a random room
+            room = (int(random.gauss(mu_size, sd_size)),
+                    int(random.gauss(mu_size, sd_size)))
 
             # determine corner
             x_corner = random.randrange(1, self.width - room[0])
@@ -99,22 +99,25 @@ class Level:
                             for i in range(x_corner, x_corner+room[0])
                             for j in range(y_corner, y_corner+room[1])
                          })
+
+                # put walls around the room
+                # Generate the north and south walls
+                self.level.update({ (i, j):Wall(i,j)
+                                    for i in range(x_corner, x_corner+room[0]+1)
+                                    for j in [y_corner, y_corner+room[1]]
+                                })
+                # Generate the east and west walls
+                self.level.update({ (i,j):Wall(i,j)
+                                    for i in [x_corner, x_corner+room[0]]
+                                    for j in range(y_corner, y_corner+room[1])
+                                })
                 # reset failCount
                 print("Failures during this placement: ", failCount)
-                print("Rooms still to be printed:\n", rooms)
                 print("\n")
                 failCount = 0
             else:
-                # put the room back in the list
-                rooms.append(room)
                 # increment failCounter
                 failCount += 1
-
-            if failCount > 10:
-                print("ERROR: Failed to place room 10 times!")
-                print("Room failed on: ", room)
-                print("Rooms still to be printed:\n", rooms)
-                rooms = []
 
 
     def __str__(self):

@@ -31,7 +31,8 @@ class Wall(Cell):
 #   level.  By itself, it represents a wall that cannot be destroyed by the
 #   player.  These walls will be used around the outer edge of each level.
     def __str__(self):
-        return u"\u2588"
+        #return u"\u2588"
+        return u"\u2593"
 
 class DestructableWall(Wall):
 #   The DestructableWall class is a subclass of the Wall class.  It represents a
