@@ -32,7 +32,7 @@ class Wall(Cell):
 #   player.  These walls will be used around the outer edge of each level.
     def __str__(self):
         #return u"\u2588"
-        return u"\u2593"
+        return "%"
 
 class DestructableWall(Wall):
 #   The DestructableWall class is a subclass of the Wall class.  It represents a
@@ -63,7 +63,10 @@ class Finish(Cell):
 ##################
 
 class Room(Cell):
+    def __init__(self, x, y, num):
+        super(Room, self).__init__(x, y)
+        self.room_num = num
     def __str__(self):
-        return "R"
+        return str(self.room_num)
         
         

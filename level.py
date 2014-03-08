@@ -16,16 +16,23 @@ class Level:
 #   grid of cells.
 
     def __init__(self, width, height):
-        self.width, self.height, self.level = width, height, {}
+        self.width, self.height, self.level, self.rooms = width, height, {}, []
         self.buildBlankLevel()
-        self.placeExits()
-        self.placeRooms()
+        self.placeRoomsNew()
         
     def buildBlankLevel(self):
         self.level.update({ (i,j):Cell(i,j)
-                            for i in range(self.width)
-                            for j in range(self.height)
-                          })
+                            for i in range(self.width+2)
+                            for j in range(self.height+2)
+            })
+        self.level.update({ (i,j):Wall(i,j)
+                            for i in range(self.width+2)
+                            for j in [0, self.height+1]
+            })
+        self.level.update({ (i,j):Wall(i,j)
+                            for i in [0, self.width+1]
+                            for j in range(self.height+2)
+            })
 
     def placeExits(self):
         sides = ['N', 'S', 'W', 'E']
@@ -119,12 +126,36 @@ class Level:
                 # increment failCounter
                 failCount += 1
 
+    def placeRoomsNew(self):
+        room_count = 0
+        x_cur = 1
+        y_cur = 1
+        room_width  = random.choice([3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8])
+        room_height = random.choice([3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8])
+        print("\nRoom width", room_width, "\nRoom Height: ", room_height)
+
+        if room_width < (self.width - x_cur):
+            self.level.update({ (i,j):Room(i, j, room_count)
+                                for i in range(x_cur, x_cur + room_width)
+                                for j in range(y_cur, y_cur + room_height)
+                })
+            self.level.update({ (i,y_cur+room_height):Wall(i,y_cur+room_height)
+                                for i in range(x_cur, x_cur + room_width + 1)
+                })
+            self.level.update({ (x_cur+room_width, j):Wall(x_cur+room_width, j)
+                                for j in range(y_cur, y_cur + room_height)
+                })
+            x_cur += room_width + 2
+        else:
+            print ("TAH-DAH!")
+
+
 
     def __str__(self):
         return "\n" + "\n".join(
             [  "".join( ["\t"]  +   [   str(self.level[(i,j)])
-                                        for i in range(self.width)
+                                        for i in range(self.width+2)
                                     ])
-                                        for j in range(self.height)
+                                        for j in range(self.height+2)
             ]) + "\n"
 
