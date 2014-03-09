@@ -14,11 +14,13 @@ import random
 class Level:
 #   The level class represents a single level of the game.  It consists of a
 #   grid of cells.
+    
+    MIN_WALL_LEN = 3
 
     def __init__(self, width, height):
         self.width, self.height, self.level, self.rooms = width, height, {}, []
         self.buildBlankLevel()
-        self.placeRoomsNew()
+        self.placeRoomsTest()
         
     def buildBlankLevel(self):
         self.level.update({ (i,j):Cell(i,j)
@@ -149,6 +151,76 @@ class Level:
         else:
             print ("TAH-DAH!")
 
+    def placeRooms3(self):
+        for i in range(1, self.width+1):
+            for j in range(1, self.height+1):
+                if (i,j) not in self.level or isinstance(self.level[(i,j)], Cell):
+                    placeRoom(i, j, room_num)
+
+    def placeRoomsTest(self):
+        self.placeRoom(1,1,0)
+
+    def placeRoom(self, x_cur, y_cur, room_num):
+
+        # Determine width
+        #################
+
+        # find available width
+        x = x_cur
+        while x < self.width:
+            if isinstance(self.level[(x, y_cur)], Wall) \
+            or isinstance(self.level[(x, y_cur)], Room):
+                break
+            x += 1
+        available_width = x - x_cur
+
+        # set room width based on available width
+        room_width = 0
+        if available_width < 2*self.MIN_WALL_LEN + 1:
+            room_width = available_width
+        else:
+            while room_width < self.MIN_WALL_LEN or room_width > available_width:
+                room_width = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
+
+        # Determine height
+        ##################
+
+        y = y_cur
+        while y < self.height:
+            if isinstance(self.level[(x_cur, y)], Wall) \
+            or isinstance(self.level[(x_cur, y)], Room):
+                break
+            y += 1
+        available_height = y - y_cur
+
+        room_height = 0
+        if available_height < 2*self.MIN_WALL_LEN:
+            room_height = available_height
+        else:
+            while room_height < self.MIN_WALL_LEN or room_height > available_height:
+                room_height = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
+
+
+        print("\nRoom width", room_width, "\nRoom Height: ", room_height)
+        # Add room to level
+        ###################
+
+        # add room
+        self.level.update({ (i,j):Room(i,j,room_num)
+                            for i in range(x_cur, x_cur + room_width)
+                            for j in range(y_cur, y_cur + room_height)
+            })
+        # add walls
+        self.level.update({ (i,j):Wall(i,j)
+                            for i in range(x_cur - 1, x_cur + room_width + 1)
+                            for j in [y_cur-1, y_cur+room_height]
+                            if not isinstance((i,j), Wall)
+            })
+        self.level.update({ (i,j):Wall(i,j)
+                            for i in [x_cur-1, x_cur+room_width]
+                            for j in range(y_cur - 1, y_cur + room_height + 1)
+                            if not isinstance((i,j), Wall)
+            })
 
 
     def __str__(self):
