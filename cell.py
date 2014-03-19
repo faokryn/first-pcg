@@ -67,6 +67,6 @@ class Room(Cell):
         super(Room, self).__init__(x, y)
         self.room_num = num
     def __str__(self):
-        return str(self.room_num)
+        return str(' ')
         
         

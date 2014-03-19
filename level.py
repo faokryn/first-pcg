@@ -20,7 +20,7 @@ class Level:
     def __init__(self, width, height):
         self.width, self.height, self.level, self.rooms = width, height, {}, []
         self.buildBlankLevel()
-        self.placeRoomsTest()
+        self.placeRooms()
         
     def buildBlankLevel(self):
         self.level.update({ (i,j):Cell(i,j)
@@ -68,97 +68,19 @@ class Level:
             self.level.update({(self.width-1, y):Finish(self.width,y)})
 
     def placeRooms(self):
-        # Set the mean and standard deviation of room size distribution
-        mu_size = 8
-        sd_size = 2
-
-        # Determine mean and standard deviation of room number distribution
-        mu_rooms = (self.height * self.width)//mu_size**2
-        sd_rooms = 1
-
-        # generate rooms
-        # rooms = [   (int(random.gauss(mu_size, sd_size)),
-        #             int(random.gauss(mu_size, sd_size)))
-        #             for i in range(int(random.gauss(mu_rooms, sd_rooms)))
-        #         ]
-
-
-        # place rooms
-        failCount = 0
-        while failCount < 50:
-            # generate a random room
-            room = (int(random.gauss(mu_size, sd_size)),
-                    int(random.gauss(mu_size, sd_size)))
-
-            # determine corner
-            x_corner = random.randrange(1, self.width - room[0])
-            y_corner = random.randrange(1, self.height - room[1])
-
-            # # check that the room can fit there
-            placeable = True
-            for i in range(x_corner, x_corner+room[0]):
-                for j in range(y_corner, y_corner+room[1]):
-                    if  isinstance(self.level[(i,j)], Wall) or \
-                        isinstance(self.level[(i,j)], Room):
-                        placeable = False
-
-            if placeable == True:
-                # place the room
-                self.level.update({ (i,j):Room(i,j)
-                            for i in range(x_corner, x_corner+room[0])
-                            for j in range(y_corner, y_corner+room[1])
-                         })
-
-                # put walls around the room
-                # Generate the north and south walls
-                self.level.update({ (i, j):Wall(i,j)
-                                    for i in range(x_corner, x_corner+room[0]+1)
-                                    for j in [y_corner, y_corner+room[1]]
-                                })
-                # Generate the east and west walls
-                self.level.update({ (i,j):Wall(i,j)
-                                    for i in [x_corner, x_corner+room[0]]
-                                    for j in range(y_corner, y_corner+room[1])
-                                })
-                # reset failCount
-                print("Failures during this placement: ", failCount)
-                print("\n")
-                failCount = 0
-            else:
-                # increment failCounter
-                failCount += 1
-
-    def placeRoomsNew(self):
-        room_count = 0
         x_cur = 1
         y_cur = 1
-        room_width  = random.choice([3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8])
-        room_height = random.choice([3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8])
-        print("\nRoom width", room_width, "\nRoom Height: ", room_height)
-
-        if room_width < (self.width - x_cur):
-            self.level.update({ (i,j):Room(i, j, room_count)
-                                for i in range(x_cur, x_cur + room_width)
-                                for j in range(y_cur, y_cur + room_height)
-                })
-            self.level.update({ (i,y_cur+room_height):Wall(i,y_cur+room_height)
-                                for i in range(x_cur, x_cur + room_width + 1)
-                })
-            self.level.update({ (x_cur+room_width, j):Wall(x_cur+room_width, j)
-                                for j in range(y_cur, y_cur + room_height)
-                })
-            x_cur += room_width + 2
-        else:
-            print ("TAH-DAH!")
-
-    def placeRooms3(self):
-        for i in range(1, self.width+1):
-            for j in range(1, self.height+1):
-                if (i,j) not in self.level or isinstance(self.level[(i,j)], Cell):
-                    placeRoom(i, j, room_num)
-
-    def placeRoomsTest(self):
-        self.placeRoom(1,1,0)
+        room_num = 0
+        while y_cur < self.height:
+            self.placeRoom(x_cur, y_cur, room_num)
+            room_num += 1
+            while (     isinstance(self.level[(x_cur, y_cur)], Wall) \
+                    or  isinstance(self.level[(x_cur, y_cur)], Room)):
+                if x_cur == self.width:
+                    x_cur = 1
+                    y_cur += 1
+                else:
+                    x_cur += 1
 
     def placeRoom(self, x_cur, y_cur, room_num):
 
@@ -167,7 +89,7 @@ class Level:
 
         # find available width
         x = x_cur
-        while x < self.width:
+        while x < self.width + 1:
             if isinstance(self.level[(x, y_cur)], Wall) \
             or isinstance(self.level[(x, y_cur)], Room):
                 break
@@ -179,14 +101,15 @@ class Level:
         if available_width < 2*self.MIN_WALL_LEN + 1:
             room_width = available_width
         else:
-            while room_width < self.MIN_WALL_LEN or room_width > available_width:
+            while room_width < self.MIN_WALL_LEN \
+            or room_width > available_width - 4:
                 room_width = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
 
         # Determine height
         ##################
 
         y = y_cur
-        while y < self.height:
+        while y < self.height + 1:
             if isinstance(self.level[(x_cur, y)], Wall) \
             or isinstance(self.level[(x_cur, y)], Room):
                 break
@@ -197,7 +120,8 @@ class Level:
         if available_height < 2*self.MIN_WALL_LEN:
             room_height = available_height
         else:
-            while room_height < self.MIN_WALL_LEN or room_height > available_height:
+            while room_height < self.MIN_WALL_LEN \
+            or room_height > available_height - 4:
                 room_height = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
 
 
@@ -221,7 +145,7 @@ class Level:
                             for j in range(y_cur - 1, y_cur + room_height + 1)
                             if not isinstance((i,j), Wall)
             })
-
+        print(self)
 
     def __str__(self):
         return "\n" + "\n".join(
