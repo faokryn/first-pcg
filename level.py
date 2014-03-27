@@ -36,57 +36,31 @@ class Level:
                             for j in range(self.height+2)
             })
 
-    def placeExits(self):
-        sides = ['N', 'S', 'W', 'E']
-        random.shuffle(sides)
-        sides = random.sample(sides, 2)
-
-        if sides[0] == 'N':
-            x = random.randrange(1, self.width-1)
-            self.level.update({(x, 0):Start(x, 0)})
-        elif sides[0] == 'S':
-            x = random.randrange(1, self.width-1)
-            self.level.update({(x, self.height-1):Start(x, self.height-1)})
-        elif sides[0] == 'W':
-            y = random.randrange(1, self.height-1)
-            self.level.update({(0, y):Start(0, y)})
-        elif sides[0] == 'E':
-            y = random.randrange(1, self.height-1)
-            self.level.update({(self.width-1, y):Start(self.width-1,y)})
-
-        if sides[1] == 'N':
-            x = random.randrange(1, self.width-1)
-            self.level.update({(x, 0):Finish(x, 0)})
-        elif sides[1] == 'S':
-            x = random.randrange(1, self.width-1)
-            self.level.update({(x, self.height-1):Finish(x, self.height-1)})
-        elif sides[1] == 'W':
-            y = random.randrange(1, self.height-1)
-            self.level.update({(0, y):Finish(0, y)})
-        elif sides[1] == 'E':
-            y = random.randrange(1, self.height-1)
-            self.level.update({(self.width-1, y):Finish(self.width,y)})
-
     def placeRooms(self):
         x_cur = 1
         y_cur = 1
         room_num = 0
-        while y_cur < self.height:
-            self.placeRoom(x_cur, y_cur, room_num)
-            room_num += 1
-            while (     isinstance(self.level[(x_cur, y_cur)], Wall) \
-                    or  isinstance(self.level[(x_cur, y_cur)], Room)):
+        while y_cur < self.height - 1:
+            if  isinstance(self.level[(x_cur, y_cur)], Wall) or \
+                isinstance(self.level[(x_cur, y_cur)], Room):
+                if x_cur == self.width:
+                    x_cur = 1
+                    y_cur += 1
+                else:
+                    x_cur += 1
+            else:
+                self.placeRoom(x_cur, y_cur, room_num)
+                room_num += 1
                 if x_cur == self.width:
                     x_cur = 1
                     y_cur += 1
                 else:
                     x_cur += 1
 
-    def placeRoom(self, x_cur, y_cur, room_num):
 
+    def placeRoom(self, x_cur, y_cur, room_num):
         # Determine width
         #################
-
         # find available width
         x = x_cur
         while x < self.width + 1:
@@ -102,7 +76,7 @@ class Level:
             room_width = available_width
         else:
             while room_width < self.MIN_WALL_LEN \
-            or room_width > available_width - 4:
+            or room_width > available_width - (self.MIN_WALL_LEN + 1):
                 room_width = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
 
         # Determine height
@@ -117,18 +91,17 @@ class Level:
         available_height = y - y_cur
 
         room_height = 0
-        if available_height < 2*self.MIN_WALL_LEN:
+        if available_height < 2*self.MIN_WALL_LEN + 1:
             room_height = available_height
         else:
             while room_height < self.MIN_WALL_LEN \
-            or room_height > available_height - 4:
+            or room_height > available_height - (self.MIN_WALL_LEN + 1):
                 room_height = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
 
 
         print("\nRoom width", room_width, "\nRoom Height: ", room_height)
         # Add room to level
         ###################
-
         # add room
         self.level.update({ (i,j):Room(i,j,room_num)
                             for i in range(x_cur, x_cur + room_width)
@@ -145,6 +118,7 @@ class Level:
                             for j in range(y_cur - 1, y_cur + room_height + 1)
                             if not isinstance((i,j), Wall)
             })
+        self.rooms.append(( room_num, (x_cur,y_cur), (room_width,room_height) ))
         print(self)
 
     def __str__(self):
