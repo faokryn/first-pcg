@@ -57,6 +57,70 @@ class Level:
                 else:
                     x_cur += 1
 
+        for room in self.rooms: 
+            # Determine neighbors: neighbors are saved as a dictionary, with
+            # the room number of the neighbor as the key and a list of tuples
+            # of the coordinates of the walls between the neighbors as the value
+            if room.x != 1:                                 # Check west
+                for i in range(room.y, room.y + room.height):
+                    if isinstance(self.level[(room.x - 2, i)], Room):
+                        neighborNum = self.level[(room.x - 2, i)].room_num
+                        if neighborNum not in room.neighbors:
+                            room.neighbors[neighborNum] = []
+                        room.neighbors[neighborNum].append(
+                            (room.x-1, i)
+                        )
+            if room.x + room.width - 1 != self.width:       # Check east
+                for i in range(room.y, room.y + room.height):
+                    if isinstance(
+                        self.level[(room.x + room.width + 1, i)], Room
+                    ):
+                        neighborNum = \
+                            self.level[(room.x + room.width + 1, i)].room_num
+                        if neighborNum not in room.neighbors:
+                            room.neighbors[neighborNum] = []
+                        room.neighbors[neighborNum].append(
+                            (room.x + room.width, i)
+                        )
+            if room.y != 1:                                 # Check north
+                for i in range(room.x, room.x + room.width):
+                    if isinstance(self.level[(i, room.y - 2)], Room):
+                        neighborNum = self.level[(i, room.y - 2)].room_num
+                        if neighborNum not in room.neighbors:
+                            room.neighbors[neighborNum] = []
+                        room.neighbors[neighborNum].append(
+                            (i, room.y - 1)
+                        )
+            if room.y + room.height - 1 != self.height:     # Check south
+                for i in range(room.x, room.x + room.width):
+                    if isinstance(
+                        self.level[(i, room.y + room.height + 1)], Room
+                    ):
+                        neighborNum = \
+                            self.level[(i, room.y + room.height + 1)].room_num
+                        if neighborNum not in room.neighbors:
+                            room.neighbors[neighborNum] = []
+                        room.neighbors[neighborNum].append(
+                            (i, room.y + room.height)
+                        )
+
+            # For each neighbor, if there isn't already an entrance, place an
+            # entrance randomly (Maybe not at all?)
+
+            for n in room.neighbors:
+                hasEntrance = False
+                # Check if there is already an entrance to the neigboring room
+                for coordinate in room.neighbors[n]:
+                    if isinstance(self.level[coordinate], Entrance):
+                        hasEntrance = True
+                # If there isn't already an entrance, place one randomly
+                if not hasEntrance:
+                    newEntrance = random.choice(room.neighbors[n])
+                    self.level.update({ 
+                        newEntrance:Entrance(newEntrance[0],newEntrance[1])
+                    })
+
+
 
     def placeRoom(self, x_cur, y_cur, room_num):
         # Determine width
@@ -99,7 +163,6 @@ class Level:
                 room_height = random.choice([3,3,4,4,4,5,5,5,5,6,6,6,7,7,8])
 
 
-        print("\nRoom width", room_width, "\nRoom Height: ", room_height)
         # Add room to level
         ###################
         # add room
@@ -118,8 +181,11 @@ class Level:
                             for j in range(y_cur - 1, y_cur + room_height + 1)
                             if not isinstance((i,j), Wall)
             })
-        self.rooms.append(( room_num, (x_cur,y_cur), (room_width,room_height) ))
-        print(self)
+        self.rooms.append(
+            RoomInfo(room_num, x_cur, y_cur, room_width, room_height)
+        )
+
+
 
     def __str__(self):
         return "\n" + "\n".join(
@@ -129,3 +195,12 @@ class Level:
                                         for j in range(self.height+2)
             ]) + "\n"
 
+class RoomInfo:
+    def __init__(self, num, x, y, width, height):
+        self.num, self.x, self.y, self.width, self.height, self.neighbors = \
+        num, x, y, width, height, {}
+
+    def __str__(self):
+        s = "Room " + str(self.num) + " [ (" + str(self.x) + "," + str(self.y) \
+            + "); " + str(self.width) + " x " + str(self.height) + " ]"
+        return s

@@ -69,4 +69,7 @@ class Room(Cell):
     def __str__(self):
         return str(' ')
         
+class Entrance(Cell):
+    def __str__(self):
+        return "+"
         

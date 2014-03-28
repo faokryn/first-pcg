@@ -17,5 +17,4 @@ def main():
     height = int(input("Height?"))
     level = Level(width, height)
     print(str(level))
-    print(level.rooms)
 main()
