@@ -8,14 +8,58 @@ CELL_SIZE = 64
 WINDOW_SIZE = 640
 
 class Char_S(pygame.sprite.Sprite):
-	def __init__(self, levelMap):
+	def __init__(self, levelMap, level):
 		pygame.sprite.Sprite.__init__(self)
 
 		self.image = pygame.Surface([CHAR_SIZE , CHAR_SIZE])
 		self.image.fill((0,0,255))
 		self.rect = self.image.get_rect()
-		self.rect.left = CELL_SIZE + 1
-		self.rect.top = CELL_SIZE + 1
+
+		# set char x start pos
+		if level.start_pos[0] == 0:
+			self.rect.left = CELL_SIZE + (CELL_SIZE//2 - CHAR_SIZE//2)
+		elif level.start_pos[0] == level.width + 1:
+			self.rect.right = (level.width + 1) * CELL_SIZE - (CELL_SIZE//2 - CHAR_SIZE//2)
+			while self.rect.right > WINDOW_SIZE - (CELL_SIZE):
+				self.rect.move_ip(-1, 0)
+				for sprite in levelMap:
+					sprite.rect.move_ip(-1, 0)
+		else:
+			self.rect.left = CELL_SIZE*level.start_pos[0] + (CELL_SIZE//2 - CHAR_SIZE//2)
+			while self.rect.right > WINDOW_SIZE//2 + CHAR_SIZE//2:
+				self.rect.move_ip(-1, 0)
+				for sprite in levelMap:
+					sprite.rect.move_ip(-1, 0)
+			
+		
+		# while self.rect.left > WINDOW_SIZE//2 - CHAR_SIZE//2:
+		# 	self.rect.move_ip(1, 0)
+		# 	for sprite in levelMap:
+		# 		sprite.rect.move_ip(1, 0)
+
+
+		
+		# set char y start pos
+		if level.start_pos[1] == 0:
+			self.rect.top = CELL_SIZE + (CELL_SIZE//2 - CHAR_SIZE//2)
+		elif level.start_pos[1] == level.height + 1:
+			self.rect.bottom = (level.height + 1) * CELL_SIZE - (CELL_SIZE//2 - CHAR_SIZE//2)
+			while self.rect.bottom > WINDOW_SIZE - (CELL_SIZE):
+				self.rect.move_ip(0, -1)
+				for sprite in levelMap:
+					sprite.rect.move_ip(0, -1)
+		else:
+			self.rect.top = CELL_SIZE*level.start_pos[1] + (CELL_SIZE//2 - CHAR_SIZE//2)
+			while self.rect.bottom > WINDOW_SIZE//2 + CHAR_SIZE//2:
+				self.rect.move_ip(0, -1)
+				for sprite in levelMap:
+					sprite.rect.move_ip(0, -1)
+
+
+		# while self.rect.top > WINDOW_SIZE//2 - CHAR_SIZE//2:
+		# 	self.rect.move_ip(0, 1)
+		# 	for sprite in levelMap:
+		# 		sprite.rect.move_ip(0, 1)
 
 	def up(self):
 		if self.rect.top - CHAR_SPEED - CELL_SIZE//2 > 0:
@@ -62,6 +106,15 @@ class Wall_S(pygame.sprite.Sprite):
 		pygame.sprite.Sprite.__init__(self)
 
 		self.image = pygame.Surface([CELL_SIZE, CELL_SIZE])
+		self.image.fill((0,0,0))
+		self.rect = self.image.get_rect()
+		self.rect.left, self.rect.top = x*CELL_SIZE, y*CELL_SIZE
+
+class Start_S(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = pygame.Surface([CELL_SIZE, CELL_SIZE])
 		self.image.fill((0,255,0))
 		self.rect = self.image.get_rect()
 		self.rect.left, self.rect.top = x*CELL_SIZE, y*CELL_SIZE
@@ -77,7 +130,9 @@ levelMap = pygame.sprite.Group()
 for cell in level.map:
 	if isinstance(level.map[cell], Wall):
 		levelMap.add(Wall_S( cell[0], cell[1] ))
-char = Char_S(levelMap)
+	elif isinstance(level.map[cell], Start):
+		levelMap.add(Start_S( cell[0], cell[1] ))
+char = Char_S(levelMap, level)
 
 while True: # Game loop
 	for event in pygame.event.get():

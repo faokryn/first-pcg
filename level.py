@@ -17,10 +17,11 @@ class Level:
     
     MIN_WALL_LEN = 3
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, start=None):
         self.width, self.height, self.map, self.rooms = width, height, {}, []
         self.buildBlankLevel()
         self.placeRooms()
+        self.placeExits(start)
         
     def buildBlankLevel(self):
         self.map.update({ (i,j):Cell(i,j)
@@ -185,6 +186,55 @@ class Level:
             RoomInfo(room_num, x_cur, y_cur, room_width, room_height)
         )
 
+    def placeExits(self, start):
+        # place start and finish blocks
+
+        # make sure start is an exceptable value
+        if start != 'N' and start != 'S' and start != 'E' and start != 'W' and \
+            start != None:
+            print("\nERROR: Unacceptable value for start\n")
+            raise SystemExit
+
+        # if there isn't a start specified, choose one randomly
+        if start == None:
+            start = random.choice(['N', 'S', 'W', 'E'])
+
+
+        if start == 'N':
+            # set start block
+            x = random.randrange(1, self.width + 1)
+            y = 0
+            while not isinstance(self.map[x, y+1], Room):
+                x = random.randrange(1, self.width + 1)
+            self.map.update({ (x,y):Start(x,y) })
+            self.start_pos = (x,y)
+
+        elif start == 'S':
+            # set start block
+            x = random.randrange(1, self.width + 1)
+            y = self.height + 1
+            while not isinstance(self.map[x, y-1], Room):
+                x = random.randrange(1, self.width + 1)
+            self.map.update({ (x,y):Start(x,y) })
+            self.start_pos = (x,y)
+
+        elif start == 'W':
+            # set start block
+            x = 0
+            y = random.randrange(1, self.height + 1)
+            while not isinstance(self.map[x+1, y], Room):
+                y = random.randrange(1, self.height + 1)
+            self.map.update({ (x,y):Start(x,y) })
+            self.start_pos = (x,y)
+
+        elif start == 'E':
+            # set start block
+            x = self.width + 1
+            y = random.randrange(1, self.height + 1)
+            while not isinstance(self.map[x-1, y], Room):
+                y = random.randrange(1, self.height + 1)
+            self.map.update({ (x,y):Start(x,y) })
+            self.start_pos = (x,y)
 
 
     def __str__(self):
