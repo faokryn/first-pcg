@@ -17,3 +17,4 @@ procedurally generated levels_
 
 #### Pygame
 1.	[_Making Games with Python and Pygame_ by Albert Sweigart](http://inventwithpython.com/pygame/chapters/)
+2.	[Official Pygame Docs](http://pygame.org/docs/)
