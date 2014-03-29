@@ -5,6 +5,7 @@ from level import *
 CHAR_SPEED = 10
 CHAR_SIZE = 50
 CELL_SIZE = 64
+WINDOW_SIZE = 640
 
 class Char_S(pygame.sprite.Sprite):
 	def __init__(self, levelMap):
@@ -17,22 +18,42 @@ class Char_S(pygame.sprite.Sprite):
 		self.rect.top = CELL_SIZE + 1
 
 	def up(self):
-		self.rect.move_ip(0, - CHAR_SPEED)
+		if self.rect.top - CHAR_SPEED - CELL_SIZE//2 > 0:
+			self.rect.move_ip(0, - CHAR_SPEED)
+		else:
+			for sprite in levelMap:
+				sprite.rect.move_ip(0, CHAR_SPEED) 
+
 		while pygame.sprite.spritecollide(self, levelMap, False) != []:
 			self.rect.move_ip(0, 1)
 
 	def down(self):
-		self.rect.move_ip(0, CHAR_SPEED)
+		if self.rect.bottom + CHAR_SPEED + CELL_SIZE//2 < WINDOW_SIZE:
+			self.rect.move_ip(0, CHAR_SPEED)
+		else:
+			for sprite in levelMap:
+				sprite.rect.move_ip(0, -CHAR_SPEED)
+
 		while pygame.sprite.spritecollide(self, levelMap, False) != []:
 			self.rect.move_ip(0, -1)
 
 	def left(self):
-		self.rect.move_ip(- CHAR_SPEED, 0)
+		if self.rect.left - CHAR_SPEED - CELL_SIZE//2 > 0:
+			self.rect.move_ip(- CHAR_SPEED, 0)
+		else:
+			for sprite in levelMap:
+				sprite.rect.move_ip(CHAR_SPEED, 0)
+
 		while pygame.sprite.spritecollide(self, levelMap, False) != []:
 			self.rect.move_ip(1, 0)
 
 	def right(self):
-		self.rect.move_ip(CHAR_SPEED, 0)
+		if self.rect.right + CHAR_SPEED + CELL_SIZE//2 < WINDOW_SIZE:
+			self.rect.move_ip(CHAR_SPEED, 0)
+		else:
+			for sprite in levelMap:
+				sprite.rect.move_ip(- CHAR_SPEED, 0)
+
 		while pygame.sprite.spritecollide(self, levelMap, False) != []:
 			self.rect.move_ip(-1, 0)
 
@@ -47,11 +68,11 @@ class Wall_S(pygame.sprite.Sprite):
 
 pygame.init()
 fpsClock = pygame.time.Clock()
-screen = pygame.display.set_mode((768, 448))
+screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
 pygame.display.set_caption("Hello World!")
 
 
-level = Level(10, 5)
+level = Level(30, 30)
 levelMap = pygame.sprite.Group()
 for cell in level.map:
 	if isinstance(level.map[cell], Wall):
