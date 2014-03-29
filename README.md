@@ -14,3 +14,6 @@ procedurally generated levels_
 1.  [_Procedural Content Generation in Games: A Textbook and an Overview of Current Research_ by Noor Shaker, Julian Togelius, and Mark J. Nelson](http://pcgbook.com/)
 2.  [Dungeon Generation article on Wikidot's PCG Wiki](http://pcg.wikidot.com/pcg-algorithm:dungeon-generation)
 3.  [Explaination of the donjon Random Dungeon Generator](http://donjon.bin.sh/fantasy/dungeon/about/)
+
+#### Pygame
+1.	[_Making Games with Python and Pygame_ by Albert Sweigart](http://inventwithpython.com/pygame/chapters/)
