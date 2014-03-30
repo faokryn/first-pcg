@@ -21,7 +21,7 @@ class Level:
         self.width, self.height, self.map, self.rooms = width, height, {}, []
         self.buildBlankLevel()
         self.placeRooms()
-        self.placeExits(start)
+        self.finish = self.placeExits(start)     
         
     def buildBlankLevel(self):
         self.map.update({ (i,j):Cell(i,j)
@@ -209,6 +209,31 @@ class Level:
             self.map.update({ (x,y):Start(x,y) })
             self.start_pos = (x,y)
 
+            # randomly choose a finish wall
+            fin_wall = random.choice(['S', 'E', 'W'])
+
+            # set the finish block
+            if fin_wall == 'S':
+                x = random.randrange(1, self.width + 1)
+                y = self.height + 1
+                while not isinstance(self.map[x, y-1], Room):
+                    x = random.randrange(1, self.width + 1)
+            elif fin_wall == 'E':
+                x = self.width + 1
+                y = random.randrange(self.height//2 + 1, self.height + 1)
+                while not isinstance(self.map[x-1, y], Room):
+                    y = random.randrange(self.height//2 + 1, self.height + 1)
+            elif fin_wall == 'W':
+                x = 0
+                y = random.randrange(self.height//2 + 1, self.height + 1)
+                while not isinstance(self.map[x+1, y], Room):
+                    y = random.randrange(self.height//2 + 1, self.height + 1)
+            else:
+                print("\nERROR: Unacceptable value for fin_wall")
+                raise SystemExit
+            self.map.update({ (x,y):Finish(x,y) })
+            return (x,y)
+
         elif start == 'S':
             # set start block
             x = random.randrange(1, self.width + 1)
@@ -217,6 +242,31 @@ class Level:
                 x = random.randrange(1, self.width + 1)
             self.map.update({ (x,y):Start(x,y) })
             self.start_pos = (x,y)
+
+            # randomly choose a finish wall
+            fin_wall = random.choice(['N', 'E', 'W'])
+
+            # set the finish block
+            if fin_wall == 'N':
+                x = random.randrange(1, self.width + 1)
+                y = 0
+                while not isinstance(self.map[x, y+1], Room):
+                    x = random.randrange(1, self.width + 1)
+            elif fin_wall == 'E':
+                x = self.width + 1
+                y = random.randrange(1, self.height//2 + 1)
+                while not isinstance(self.map[x-1, y], Room):
+                    y = random.randrange(1, self.height//2 + 1)
+            elif fin_wall == 'W':
+                x = 0
+                y = random.randrange(1, self.height//2 + 1)
+                while not isinstance(self.map[x+1, y], Room):
+                    y = random.randrange(1, self.height//2 + 1)
+            else:
+                print("\nERROR: Unacceptable value for fin_wall")
+                raise SystemExit
+            self.map.update({ (x,y):Finish(x,y) })
+            return (x,y)
 
         elif start == 'W':
             # set start block
@@ -227,6 +277,31 @@ class Level:
             self.map.update({ (x,y):Start(x,y) })
             self.start_pos = (x,y)
 
+            # randomly choose a finish wall
+            fin_wall = random.choice(['N', 'E', 'S'])
+
+            # set the finish block
+            if fin_wall == 'S':
+                x = random.randrange(self.width//2 + 1, self.width + 1)
+                y = self.height + 1
+                while not isinstance(self.map[x, y-1], Room):
+                    x = random.randrange(self.width//2 + 1, self.width + 1)
+            elif fin_wall == 'N':
+                x = random.randrange(self.width//2 + 1, self.width + 1)
+                y = 0
+                while not isinstance(self.map[x, y+1], Room):
+                    x = random.randrange(self.width//2 + 1, self.width + 1)
+            elif fin_wall == 'E':
+                x = self.width + 1
+                y = random.randrange(1, self.height + 1)
+                while not isinstance(self.map[x-1, y], Room):
+                    y = random.randrange(1, self.height + 1)
+            else:
+                print("\nERROR: Unacceptable value for fin_wall")
+                raise SystemExit
+            self.map.update({ (x,y):Finish(x,y) })
+            return (x,y)
+
         elif start == 'E':
             # set start block
             x = self.width + 1
@@ -235,6 +310,31 @@ class Level:
                 y = random.randrange(1, self.height + 1)
             self.map.update({ (x,y):Start(x,y) })
             self.start_pos = (x,y)
+
+            # randomly choose a finish wall
+            fin_wall = random.choice(['N', 'W', 'S'])
+
+            # set the finish block
+            if fin_wall == 'S':
+                x = random.randrange(1, self.width//2 + 1)
+                y = self.height + 1
+                while not isinstance(self.map[x, y-1], Room):
+                    x = random.randrange(1, self.width//2 + 1)
+            elif fin_wall == 'N':
+                x = random.randrange(1, self.width//2 + 1)
+                y = 0
+                while not isinstance(self.map[x, y+1], Room):
+                    x = random.randrange(1, self.width//2 + 1)
+            elif fin_wall == 'W':
+                x = 0
+                y = random.randrange(1, self.height + 1)
+                while not isinstance(self.map[x+1, y], Room):
+                    y = random.randrange(1, self.height + 1)
+            else:
+                print("\nERROR: Unacceptable value for fin_wall")
+                raise SystemExit
+            self.map.update({ (x,y):Finish(x,y) })
+            return (x,y)
 
 
     def __str__(self):
