@@ -1,11 +1,11 @@
-import pygame, sys
+import pygame, sys, random
 from pygame.locals import *
 from level import *
 
-CHAR_SPEED = 10
-CHAR_SIZE = 50
-CELL_SIZE = 64
-WINDOW_SIZE = 640
+CHAR_SPEED	= 10
+CHAR_SIZE	= 50
+CELL_SIZE	= 64
+WINDOW_SIZE	= 640
 
 class Char_S(pygame.sprite.Sprite):
 	def __init__(self, level):
@@ -155,10 +155,13 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
 pygame.display.set_caption("PCG Maze!")
+level_width = 10
+level_height = 10
+start_wall = None
 
-while True:
+while True: # game loop
 	level_complete = False
-	level = Level(30, 30)
+	level = Level(level_width, level_height, start_wall)
 	levelMap = pygame.sprite.Group()
 	collisionMap = pygame.sprite.Group()
 	finish = pygame.sprite.Group()
@@ -182,7 +185,7 @@ while True:
 			finish.add(newSprite)
 	char = Char_S(level)
 
-	while not level_complete: # Game loop
+	while not level_complete: # level loop
 		for event in pygame.event.get():
 			# Check if game has been quit and quit
 			if event.type == QUIT:
@@ -210,3 +213,17 @@ while True:
 
 		pygame.display.update()
 		fpsClock.tick(30)
+
+	level_width  += random.choice([1, 2, 3, 3, 4, 4, 5, 5, 5])
+	level_height += random.choice([1, 2, 3, 3, 4, 4, 5, 5, 5])
+	if level.finish == 'N':
+		start_wall = 'S'
+	elif level.finish == 'S':
+		start_wall = 'N'
+	elif level.finish == 'E':
+		start_wall = 'W'
+	elif level.finish == 'W':
+		start_wall = 'E'
+	else:
+		print("\nERROR: Unacceptable value for level.finish\n")
+		raise SystemExit

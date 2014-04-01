@@ -21,7 +21,7 @@ class Level:
         self.width, self.height, self.map, self.rooms = width, height, {}, []
         self.buildBlankLevel()
         self.placeRooms()
-        self.finish = self.placeExits(start)     
+        self.finish = self.placeExits(start)
         
     def buildBlankLevel(self):
         self.map.update({ (i,j):Cell(i,j)
@@ -232,7 +232,7 @@ class Level:
                 print("\nERROR: Unacceptable value for fin_wall")
                 raise SystemExit
             self.map.update({ (x,y):Finish(x,y) })
-            return (x,y)
+            return fin_wall
 
         elif start == 'S':
             # set start block
@@ -266,7 +266,7 @@ class Level:
                 print("\nERROR: Unacceptable value for fin_wall")
                 raise SystemExit
             self.map.update({ (x,y):Finish(x,y) })
-            return (x,y)
+            return fin_wall
 
         elif start == 'W':
             # set start block
@@ -300,7 +300,7 @@ class Level:
                 print("\nERROR: Unacceptable value for fin_wall")
                 raise SystemExit
             self.map.update({ (x,y):Finish(x,y) })
-            return (x,y)
+            return fin_wall
 
         elif start == 'E':
             # set start block
@@ -334,7 +334,7 @@ class Level:
                 print("\nERROR: Unacceptable value for fin_wall")
                 raise SystemExit
             self.map.update({ (x,y):Finish(x,y) })
-            return (x,y)
+            return fin_wall
 
 
     def __str__(self):
